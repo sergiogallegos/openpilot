@@ -417,8 +417,20 @@ class Tici(HardwareBase):
   def initialize_hardware(self):
     self.amplifier.initialize_configuration()
 
+    def affine_irq(val, irq):
+      sudo_write(val, f"/proc/irq/{irq}/smp_affinity_list")
+
     # Allow thermald to write engagement status to kmsg
     os.system("sudo chmod a+w /dev/kmsg")
+
+    # *** IRQ config ***
+    # TODO: cameras +  loggerd
+    affine_irq("2", 7)    # move msm_drm off default core
+    affine_irq("2", 250)  # move msm_vidc off default core
+    affine_irq("2", 565)  # move kgsl-3d0 off default core
+    affine_irq("2", 8)    # move i2c_geni off default core (sensord)
+    affine_irq("4", 740)  # xhci-hcd:usb1 goes on the boardd core
+    sudo_write("f", "/proc/irq/default_smp_affinity")
 
     # *** GPU config ***
     sudo_write("0", "/sys/class/kgsl/kgsl-3d0/min_pwrlevel")
