@@ -403,8 +403,9 @@ class Tici(HardwareBase):
       sudo_write(val, f"/sys/devices/system/cpu/cpu{i}/online")
 
     for n in ('0', '4'):
-      gov = 'ondemand' if powersave_enabled else 'performance'
+      gov = 'ondemand' if powersave_enabled else 'userspace'
       sudo_write(gov, f"/sys/devices/system/cpu/cpufreq/policy{n}/scaling_governor")
+      sudo_write('1056000', f"/sys/devices/system/cpu/cpufreq/policy{n}/scaling_setspeed")
 
   def get_gpu_usage_percent(self):
     try:
