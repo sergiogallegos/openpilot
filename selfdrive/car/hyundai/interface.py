@@ -297,7 +297,9 @@ class CarInterface(CarInterfaceBase):
     ret.canValid = self.cp.can_valid and self.cp_cam.can_valid
     ret.steeringRateLimited = self.CC.steer_rate_limited if self.CC is not None else False
 
-    events = self.create_common_events(ret, pcm_enable=self.CS.CP.pcmCruise)
+    user_enabled = any([btn in [Buttons.RES_DECEL, Buttons.RES_ACCEL] for btn in self.CS.prev_cruise_buttons])
+    user_enabled |= Buttons.CANCEL in self.CS.prev_cruise_buttons and not self.CS.cruiseState.enabled
+    events = self.create_common_events(ret, pcm_enable=self.CS.CP.pcmCruise, user_enabled=user_enabled)
 
     if self.CS.brake_error:
       events.add(EventName.brakeUnavailable)
