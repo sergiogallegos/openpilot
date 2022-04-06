@@ -79,7 +79,8 @@ class CarController:
 
     if not self.CP.openpilotLongitudinalControl:
       if pcm_cancel_cmd:
-        can_sends.append(create_clu11(self.packer, self.frame, CS.clu11, Buttons.CANCEL))
+        if self.frame % 4 == 0:
+          can_sends.extend(create_clu11(self.packer, self.frame, CS.clu11, Buttons.CANCEL) * 10)
       elif CS.out.cruiseState.standstill:
         # send resume at a max freq of 10Hz
         if (self.frame - self.last_resume_frame) * DT_CTRL > 0.1:
